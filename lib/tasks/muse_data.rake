@@ -80,9 +80,10 @@ require "open-uri"
       return false if albums.nil?
       albums
     end
-
-    desc "make artist json"
-    task :getArtist do
+namespace :muse do 
+    desc "get popular artists json"
+    task :popular_artists do
+      puts "getting popular artists json"
       i = 1
       puts "page: #{i}"
       url = "http://www.xiami.com/artist/index/c/2/type/0/class/0/page/#{i}"
@@ -125,6 +126,7 @@ require "open-uri"
 
     desc "add artist into database"
     task :artists_into_DS => :environment do
+      puts "adding artist into database"
       File.open("public/artists/" + get_date + "_xiami.json") do |f|
         json = JSON.parse(f.read)
         json.each{|artist|
@@ -138,7 +140,8 @@ require "open-uri"
     end
 
     desc "get songs by artist"
-    task :artist_songs => :environment do
+    task :artist_topsongs => :environment do
+      puts "getting songs by artist"
       artists = Artist.all
       artists.each{|artist|
         output_data = get_xiami_data artist.artist_id
@@ -154,6 +157,7 @@ require "open-uri"
 
     desc "get albums by artist"
     task :artist_albums => :environment do
+      puts "gettgin albums by artist"
       artists = Artist.all
       artists.each{|artist|
         output_data = get_album_data artist.artist_id
@@ -169,6 +173,7 @@ require "open-uri"
 
     desc "add albums into database"
     task :albums_into_DS => :environment do
+      puts "adding albums into database"
       artists = Artist.all
       artists.each{|artist|
         File.open("public/artists/#{artist.artist_id}/" + get_date + "_xiami.json") do |f|
@@ -191,6 +196,7 @@ require "open-uri"
 
     desc "add songs into database"
     task :songs_into_DS => :environment do
+      puts "adding songs into database"
       artists = Artist.all
       artists.each{|artist|
         File.open("public/musics/#{artist.artist_id}/" + get_date + "_xiami.json") do |f|
@@ -230,6 +236,7 @@ require "open-uri"
 
     desc "get songs from albums"
     task :album_songs => :environment do
+      puts "getting songs from albums json"
       albums = Album.all
       albums.each{|album|
         output_data = get_music_from_album album.album_id
@@ -246,3 +253,8 @@ require "open-uri"
         end
       }
     end
+
+    desc "popular songs' json into database"
+    task :popular_into_DS => [:environment,:artists_into_DS,:albums_into_DS,:songs_into_DS] do
+    end
+  end
