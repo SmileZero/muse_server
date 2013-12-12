@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Tag:</strong>
+  <%= @tag_relationship.tag_id %>
+</p>
+
+<p>
+  <strong>Music:</strong>
+  <%= @tag_relationship.music_id %>
+</p>
+
+<%= link_to 'Edit', edit_tag_relationship_path(@tag_relationship) %> |
+<%= link_to 'Back', tag_relationships_path %>

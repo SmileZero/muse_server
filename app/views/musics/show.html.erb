@@ -1,0 +1,34 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @music.name %>
+</p>
+
+<p>
+  <strong>Resource:</strong>
+  <%= @music.resource_id %>
+</p>
+
+<p>
+  <strong>Music:</strong>
+  <%= @music.music_id %>
+</p>
+
+<p>
+  <strong>Location:</strong>
+  <%= @music.location %>
+</p>
+
+<p>
+  <strong>Artist:</strong>
+  <%= @music.artist_id %>
+</p>
+
+<p>
+  <strong>Album:</strong>
+  <%= @music.album_id %>
+</p>
+
+<%= link_to 'Edit', edit_music_path(@music) %> |
+<%= link_to 'Back', musics_path %>

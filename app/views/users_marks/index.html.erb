@@ -1,0 +1,31 @@
+<h1>Listing users_marks</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Music</th>
+      <th>Mark</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @users_marks.each do |users_mark| %>
+      <tr>
+        <td><%= users_mark.user_id %></td>
+        <td><%= users_mark.music_id %></td>
+        <td><%= users_mark.mark %></td>
+        <td><%= link_to 'Show', users_mark %></td>
+        <td><%= link_to 'Edit', edit_users_mark_path(users_mark) %></td>
+        <td><%= link_to 'Destroy', users_mark, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Users mark', new_users_mark_path %>

@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>User:</strong>
+  <%= @users_mark.user_id %>
+</p>
+
+<p>
+  <strong>Music:</strong>
+  <%= @users_mark.music_id %>
+</p>
+
+<p>
+  <strong>Mark:</strong>
+  <%= @users_mark.mark %>
+</p>
+
+<%= link_to 'Edit', edit_users_mark_path(@users_mark) %> |
+<%= link_to 'Back', users_marks_path %>
