@@ -1,5 +1,5 @@
 class MusicsController < ApplicationController
-  before_action :set_music, only: [:show, :edit, :update, :destroy]
+  before_action :set_music, only: [:edit, :update, :destroy]
 
   # GET /musics
   # GET /musics.json
@@ -10,6 +10,33 @@ class MusicsController < ApplicationController
   # GET /musics/1
   # GET /musics/1.json
   def show
+    begin
+      @music = Music.find(params[:id])
+      artist = @music.artist
+      album = @music.album
+      musicInfo = {
+        id: @music.id,
+        name: @music.name,
+        resource_id: 0,
+        music_id: @music.music_id,
+        location: @music.location,
+        lyric: @music.lyric,
+        artist_id: artist.artist_id,
+        artist_name: artist.name,
+        album_id: album.album_id,
+        album_name: album.name,
+        cover_url: album.cover_url
+      }
+      @result = {
+        status:"ok",
+        music: musicInfo
+      }
+    rescue ActiveRecord::RecordNotFound
+      @result = {
+        status:"failed",
+        msg:"Can't find the music"
+      }
+    end
   end
 
   # GET /musics/new
