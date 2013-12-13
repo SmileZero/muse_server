@@ -1,10 +1,11 @@
 class UsersMarksController < ApplicationController
   before_action :set_users_mark, only: [:show, :edit, :update, :destroy]
+  before_action :correct_user, only: [:show, :edit, :update, :destroy]
 
   # GET /users_marks
   # GET /users_marks.json
   def index
-    @users_marks = UsersMark.all
+    @users_marks = current_user.users_marks.all
   end
 
   # GET /users_marks/1
@@ -71,4 +72,10 @@ class UsersMarksController < ApplicationController
     def users_mark_params
       params.require(:users_mark).permit(:user_id, :music_id, :mark)
     end
+
+    def correct_user
+      @users_marks = current_user.users_marks.find_by(id: params[:id])
+      render json:{status:"failed", msg:"You have not this item." } if @users_marks.nil?
+    end
+
 end

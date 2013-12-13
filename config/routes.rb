@@ -1,4 +1,10 @@
 MuseServer::Application.routes.draw do
+
+  get '/signup' => 'users#new'
+  get '/login' => 'sessions#new'
+  post '/signin' => 'sessions#create'
+  delete '/signout' => 'sessions#destroy'
+
   resources :users
 
   resources :users_marks
@@ -13,6 +19,7 @@ MuseServer::Application.routes.draw do
 
   resources :artists
 
+  root 'users#index'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
