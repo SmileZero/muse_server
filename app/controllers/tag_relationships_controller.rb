@@ -1,4 +1,5 @@
 class TagRelationshipsController < ApplicationController
+  before_action :signed_in_user
   before_action :set_tag_relationship, only: [:show, :edit, :update, :destroy]
 
   # GET /tag_relationships

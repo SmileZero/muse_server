@@ -1,4 +1,5 @@
 class MusicsController < ApplicationController
+  before_action :signed_in_user
   before_action :set_music, only: [:edit, :update, :destroy]
 
   # GET /musics
@@ -98,4 +99,5 @@ class MusicsController < ApplicationController
     def music_params
       params.require(:music).permit(:name, :resource_id, :music_id, :location, :artist_id, :album_id)
     end
+    
 end

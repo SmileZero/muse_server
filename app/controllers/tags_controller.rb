@@ -1,4 +1,5 @@
 class TagsController < ApplicationController
+  before_action :signed_in_user
   before_action :set_tag, only: [:show, :edit, :update, :destroy]
 
   # GET /tags
