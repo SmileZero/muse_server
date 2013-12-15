@@ -4,6 +4,7 @@ MuseServer::Application.routes.draw do
   get '/login' => 'sessions#new'
   post '/signin' => 'sessions#create'
   delete '/signout' => 'sessions#destroy'
+  get '/getCSRFToken' => 'sessions#getCSRFToken'
 
   resources :users
 

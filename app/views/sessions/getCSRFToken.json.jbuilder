@@ -1,0 +1,1 @@
+json.set! :csrf_token, form_authenticity_token
