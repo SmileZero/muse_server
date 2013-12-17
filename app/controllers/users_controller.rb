@@ -38,7 +38,7 @@ class UsersController < ApplicationController
         format.json { render json: {status:"ok", user:@user} }
       else
         format.html { render action: 'new' }
-        format.json { render json: {status:"failed", msg:@user.errors} }
+        format.json { render json: {status:"failed", msg:@user.errors.full_messages.join("\n")} }
       end
     end
   end
