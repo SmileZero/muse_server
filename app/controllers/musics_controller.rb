@@ -1,5 +1,5 @@
 class MusicsController < ApplicationController
-  before_action :signed_in_user
+  #before_action :signed_in_user
   before_action :set_music, only: [:edit, :update, :destroy]
 
   # GET /musics

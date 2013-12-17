@@ -1,5 +1,5 @@
 class AlbumsController < ApplicationController
-  before_action :signed_in_user
+  #before_action :signed_in_user
   before_action :set_album, only: [:show, :edit, :update, :destroy]
 
   # GET /albums
