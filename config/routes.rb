@@ -12,7 +12,13 @@ MuseServer::Application.routes.draw do
 
   resources :albums
 
-  resources :musics
+  resources :musics do
+    member do
+      get "like"
+      get "dislike"
+      get "unmark"
+    end
+  end
 
   resources :tags
 
