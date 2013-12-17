@@ -13,6 +13,11 @@ class MusicsController < ApplicationController
   def show
     begin
       @music = Music.find(params[:id])
+      users_mark = @current_user.users_marks.find_by_music_id params[:id]
+      mark = 0
+      if users_mark
+        mark = users_mark.mark
+      end
       artist = @music.artist
       album = @music.album
       musicInfo = {
@@ -26,7 +31,8 @@ class MusicsController < ApplicationController
         artist_name: artist.name,
         album_id: album.album_id,
         album_name: album.name,
-        cover_url: album.cover_url
+        cover_url: album.cover_url,
+        mark: mark
       }
       @result = {
         status:"ok",
@@ -87,6 +93,21 @@ class MusicsController < ApplicationController
       format.html { redirect_to musics_url }
       format.json { head :no_content }
     end
+  end
+
+  def like
+    current_user.like Music.find(params[:id])
+    render json:{status:"ok"}
+  end
+
+  def dislike
+    current_user.dislike Music.find(params[:id])
+    render json:{status:"ok"}
+  end
+
+  def unmark
+    current_user.unmark Music.find(params[:id])
+    render json:{status:"ok"}
   end
 
   private

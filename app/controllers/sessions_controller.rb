@@ -25,7 +25,9 @@ class SessionsController < ApplicationController
 
   def destroy
   	sign_out
-    render json:{status:"ok"}
+    respond_to do |format|
+      format.json { render json: {status:"ok"} }
+    end
   end
 
   def getCSRFToken
