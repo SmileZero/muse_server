@@ -1,11 +1,24 @@
 MuseServer::Application.routes.draw do
+
+  get '/signup' => 'users#new'
+  get '/login' => 'sessions#new'
+  post '/signin' => 'sessions#create'
+  delete '/signout' => 'sessions#destroy'
+  get '/getCSRFToken' => 'sessions#getCSRFToken'
+
   resources :users
 
   resources :users_marks
 
   resources :albums
 
-  resources :musics
+  resources :musics do
+    member do
+      get "like"
+      get "dislike"
+      get "unmark"
+    end
+  end
 
   resources :tags
 
@@ -13,6 +26,7 @@ MuseServer::Application.routes.draw do
 
   resources :artists
 
+  root 'users#index'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

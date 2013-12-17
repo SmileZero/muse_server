@@ -1,4 +1,5 @@
 class MusicsController < ApplicationController
+  before_action :signed_in_user
   before_action :set_music, only: [:edit, :update, :destroy]
 
   # GET /musics
@@ -12,6 +13,11 @@ class MusicsController < ApplicationController
   def show
     begin
       @music = Music.find(params[:id])
+      users_mark = @current_user.users_marks.find_by_music_id params[:id]
+      mark = 0
+      if users_mark
+        mark = users_mark.mark
+      end
       artist = @music.artist
       album = @music.album
       musicInfo = {
@@ -25,7 +31,8 @@ class MusicsController < ApplicationController
         artist_name: artist.name,
         album_id: album.album_id,
         album_name: album.name,
-        cover_url: album.cover_url
+        cover_url: album.cover_url,
+        mark: mark
       }
       @result = {
         status:"ok",
@@ -88,6 +95,21 @@ class MusicsController < ApplicationController
     end
   end
 
+  def like
+    current_user.like Music.find(params[:id])
+    render json:{status:"ok"}
+  end
+
+  def dislike
+    current_user.dislike Music.find(params[:id])
+    render json:{status:"ok"}
+  end
+
+  def unmark
+    current_user.unmark Music.find(params[:id])
+    render json:{status:"ok"}
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_music
@@ -98,4 +120,5 @@ class MusicsController < ApplicationController
     def music_params
       params.require(:music).permit(:name, :resource_id, :music_id, :location, :artist_id, :album_id)
     end
+    
 end

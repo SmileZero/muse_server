@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131212064806) do
+ActiveRecord::Schema.define(version: 20131213010000) do
 
   create_table "albums", force: true do |t|
     t.integer  "resource_id"
@@ -64,7 +64,10 @@ ActiveRecord::Schema.define(version: 20131212064806) do
     t.string   "avatar"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "remember_token"
   end
+
+  add_index "users", ["remember_token"], name: "index_users_on_remember_token", using: :btree
 
   create_table "users_marks", force: true do |t|
     t.integer  "user_id"
