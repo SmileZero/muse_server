@@ -1,0 +1,29 @@
+<%= form_for(@song_graph) do |f| %>
+  <% if @song_graph.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@song_graph.errors.count, "error") %> prohibited this song_graph from being saved:</h2>
+
+      <ul>
+      <% @song_graph.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :song_weight %><br>
+    <%= f.number_field :song_weight %>
+  </div>
+  <div class="field">
+    <%= f.label :from_music_id %><br>
+    <%= f.number_field :from_music_id %>
+  </div>
+  <div class="field">
+    <%= f.label :to_music_id %><br>
+    <%= f.number_field :to_music_id %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

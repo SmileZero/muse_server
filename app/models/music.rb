@@ -6,6 +6,9 @@ class Music < ActiveRecord::Base
 	belongs_to :album
 	has_many :users_marks
 
+	belongs_to :song_graph, :class_name => "SongGraph"
+	belongs_to :song_graph, :class_name => "SongGraph"
+
 	def tagging(tag)
 		self.tag_relationship.create(tag_id:tag.id)
 	end
