@@ -13,7 +13,7 @@ class MusicsController < ApplicationController
   def show
     begin
       @music = Music.find(params[:id])
-      users_mark = @current_user.users_marks.find_by_music_id params[:id]
+      users_mark = current_user.users_marks.find_by_music_id params[:id]
       mark = 0
       if users_mark
         mark = users_mark.mark
