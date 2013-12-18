@@ -17,6 +17,10 @@ class User < ActiveRecord::Base
     self.password_hash = @password
   end
 
+  def get_fav_music_idList
+    self.users_marks.where("mark=1").pluck(:music_id)
+  end
+
   def mark(music,mark_value)
     mark_record = self.users_marks.find_by_music_id music.id
     if mark_record == nil

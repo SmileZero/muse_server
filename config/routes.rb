@@ -5,6 +5,7 @@ MuseServer::Application.routes.draw do
   post '/signin' => 'sessions#create'
   delete '/signout' => 'sessions#destroy'
   get '/getCSRFToken' => 'sessions#getCSRFToken'
+  get '/fav' => 'tags#fav'
 
   resources :users
 
