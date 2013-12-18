@@ -18,6 +18,9 @@ MuseServer::Application.routes.draw do
       get "dislike"
       get "unmark"
     end
+    collection do
+      get "search"
+    end
   end
 
   resources :tags
