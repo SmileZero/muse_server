@@ -46,6 +46,93 @@ class MusicsController < ApplicationController
     end
   end
 
+  def search
+    musicName = params[:musicName]
+    artistName = params[:artistName]
+    if musicName.nil? || artistName.nil?
+      @result = {
+          status:"failed",
+          msg:"Can't find the music"
+      }
+      return
+    end
+    match_musics = Music.joins(:artist).where("musics.name=? AND artists.name = ?",musicName,artistName);
+    if match_musics.count == 0
+      match_musics = search_song_from_xiami_data musicName,artistName
+      if match_musics.nil?
+        @result = {
+          status:"failed",
+          msg:"Can't find the music"
+        }
+        return
+      else
+        @music = get_song_from_xiami match_musics[0]["id"]
+        if @music.nil?
+          @result = {
+            status:"failed",
+            msg:"Can't find the music"
+          }
+          return
+        end
+        artist = Artist.find_by_artist_id @music["artist_id"]
+        album = Album.find_by_album_id @music["album_id"]
+        if !artist
+          artist = Artist.create({artist_id: @music["artist_id"],name: @music["artist_name"], resource_id: 0})
+        end
+        if !album
+          cover_url = @music["album_logo"][0..-7]+@music["album_logo"][-4..-1]
+          album = Album.create({resource_id: 0,artist_id: artist.id ,album_id: @music["album_id"], name: @music["album_name"], cover_url: cover_url})
+        end
+        @music = Music.create({music_id: @music["song_id"], resource_id: 0, album_id: album.id, artist_id: artist.id, name: @music["song_name"], location: @music["song_location"], lyric: @music["song_lrc"]})
+        musicInfo = {
+          id: @music.id,
+          name: @music.name,
+          resource_id: 0,
+          music_id: @music.music_id,
+          location: @music.location,
+          lyric: @music.lyric,
+          artist_id: artist.artist_id,
+          artist_name: artist.name,
+          album_id: album.album_id,
+          album_name: album.name,
+          cover_url: album.cover_url,
+          mark: 0
+        }
+        @result = {
+          status:"ok",
+          music: musicInfo
+        }
+      end
+    else
+      @music =  match_musics[0]
+      users_mark = current_user.users_marks.find_by_music_id @music.music_id
+      mark = 0
+      if users_mark
+        mark = users_mark.mark
+      end
+      artist = @music.artist
+      album = @music.album
+      musicInfo = {
+        id: @music.id,
+        name: @music.name,
+        resource_id: 0,
+        music_id: @music.music_id,
+        location: @music.location,
+        lyric: @music.lyric,
+        artist_id: artist.artist_id,
+        artist_name: artist.name,
+        album_id: album.album_id,
+        album_name: album.name,
+        cover_url: album.cover_url,
+        mark: mark
+      }
+      @result = {
+        status:"ok",
+        music: musicInfo
+      }
+    end
+  end
+
   # GET /musics/new
   def new
     @music = Music.new
@@ -118,7 +205,48 @@ class MusicsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def music_params
+      params.permit(:musicName, :artistName)
       params.require(:music).permit(:name, :resource_id, :music_id, :location, :artist_id, :album_id)
     end
-    
+private
+    def search_song_from_xiami_data(musicName,artistName)
+      puts "musicName: #{musicName} artistName: #{artistName}"
+      url = "http://www.xiami.com/app/android/searchv1?key=#{musicName}%20#{artistName}"
+      url = URI.encode(url)
+      retries = 20
+      begin
+        json = JSON.parse(open(url).read)
+      rescue
+        puts "re"
+        retries -= 1
+        if retries > 0
+          sleep 0.5 and retry
+        else
+          raise
+        end
+      end
+
+      songs = json["songs"]
+      songs
+    end
+    def get_song_from_xiami(music_id)
+      puts "music_id: #{music_id}"
+      url = "http://www.xiami.com/app/android/song?id=#{music_id}"
+      url = URI.encode(url)
+      retries = 20
+      begin
+        json = JSON.parse(open(url).read)
+      rescue
+        puts "re"
+        retries -= 1
+        if retries > 0
+          sleep 0.5 and retry
+        else
+          raise
+        end
+      end
+
+      song = json["song"]
+      song
+    end
 end
