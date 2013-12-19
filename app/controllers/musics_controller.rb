@@ -1,5 +1,5 @@
 class MusicsController < ApplicationController
-  before_action :signed_in_user
+  #before_action :signed_in_user
   before_action :set_music, only: [:edit, :update, :destroy]
 
   # GET /musics
@@ -77,13 +77,13 @@ class MusicsController < ApplicationController
         artist = Artist.find_by_artist_id @music["artist_id"]
         album = Album.find_by_album_id @music["album_id"]
         if !artist
-          artist = Artist.create({artist_id: @music["artist_id"],name: @music["artist_name"], resource_id: 0})
+          artist = Artist.create({artist_id: @music["artist_id"],name: CGI.unescapeHTML(@music["artist_name"]), resource_id: 0})
         end
         if !album
           cover_url = @music["album_logo"][0..-7]+@music["album_logo"][-4..-1]
-          album = Album.create({resource_id: 0,artist_id: artist.id ,album_id: @music["album_id"], name: @music["album_name"], cover_url: cover_url})
+          album = Album.create({resource_id: 0,artist_id: artist.id ,album_id: @music["album_id"], name: CGI.unescapeHTML(@music["album_name"]), cover_url: cover_url})
         end
-        @music = Music.create({music_id: @music["song_id"], resource_id: 0, album_id: album.id, artist_id: artist.id, name: @music["song_name"], location: @music["song_location"], lyric: @music["song_lrc"]})
+        @music = Music.create({music_id: @music["song_id"], resource_id: 0, album_id: album.id, artist_id: artist.id, name: CGI.unescapeHTML(@music["song_name"]), location: @music["song_location"], lyric: @music["song_lrc"]})
         musicInfo = {
           id: @music.id,
           name: @music.name,

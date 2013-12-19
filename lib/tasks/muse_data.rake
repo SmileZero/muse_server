@@ -1,7 +1,7 @@
 require "open-uri"
 
     def get_date
-      Date.current.to_s
+      "2013-12-12"
     end
 
     def parse_artist_data(nokogiri_data)
@@ -133,7 +133,7 @@ namespace :muse do
             if Artist.find_by_artist_id artist["artist_id"].to_i
             else
               puts artist["name"]
-              Artist.create({resource_id:0,name:artist["name"],artist_id:artist["artist_id"]});
+              Artist.create({resource_id:0,name:CGI.unescapeHTML(artist["name"]),artist_id:artist["artist_id"]});
             end
         }
       end
@@ -184,7 +184,7 @@ namespace :muse do
               album_params = {}
               album_params["resource_id"] = 0
               album_params["album_id"] = album["album_id"].to_i
-              album_params["name"] = album["title"]
+              album_params["name"] = CGI.unescapeHTML(album["title"])
               album_params["cover_url"] = album["album_logo"][0..-7]+album["album_logo"][-4..-1]
               album_params["artist_id"] = artist.id
               album_record = Album.create(album_params)
@@ -205,7 +205,7 @@ namespace :muse do
             if !Music.find_by_music_id song["song_id"].to_i
               puts song["name"]
               music_params = {}
-              music_params["name"] = song["name"]
+              music_params["name"] = CGI.unescapeHTML(song["name"])
               music_params["resource_id"] = 0
               music_params["music_id"] = song["song_id"].to_i
               music_params["location"] = song["location"]
@@ -220,7 +220,7 @@ namespace :muse do
                 #album = get_album_data song["album_id"]
                 album_params["resource_id"] = 0
                 album_params["album_id"] = song["album_id"].to_i#album["album_id"].to_i
-                album_params["name"] = song["title"]#album["title"]
+                album_params["name"] = CGI.unescapeHTML(song["title"])#album["title"]
 
                 album_params["cover_url"] = song["album_logo"][0..-7]+song["album_logo"][-4..-1]#album["album_logo"]
                 album_params["artist_id"] = artist.id

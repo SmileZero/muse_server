@@ -17,6 +17,10 @@ class User < ActiveRecord::Base
     self.password_hash = @password
   end
 
+  def get_fav_music_idList
+    self.users_marks.where("mark=1").pluck(:music_id)
+  end
+
   def mark(music,mark_value)
     mark_record = self.users_marks.find_by_music_id music.id
     if mark_record == nil
@@ -26,11 +30,26 @@ class User < ActiveRecord::Base
     end
   end
 
+  def liked_marks 
+    UsersMark.where("user_id = ? and mark = 1", self.id)
+  end
+
   def like(music)
+    marks = self.liked_marks
+    marks.each do |mark|
+      SongGraph.add_edge(mark.music_id, music.id)
+    end
+
     self.mark music,1
   end
 
   def unmark(music)
+
+    marks = self.liked_marks
+    marks.each do |mark|
+      SongGraph.add_edge(mark.music_id, music.id)
+    end
+
     self.mark music,0
   end
 

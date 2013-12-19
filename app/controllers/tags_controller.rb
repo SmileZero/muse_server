@@ -1,6 +1,6 @@
 class TagsController < ApplicationController
   before_action :signed_in_user
-  before_action :set_tag, only: [:show, :edit, :update, :destroy]
+  before_action :set_tag, only: [:edit, :update, :destroy]
 
   # GET /tags
   # GET /tags.json
@@ -11,6 +11,32 @@ class TagsController < ApplicationController
   # GET /tags/1
   # GET /tags/1.json
   def show
+    begin
+      @tag = Tag.find(params[:id])
+      @id_list = @tag.get_music_idList
+      @result = {
+        status:"ok",
+        tag: {
+          id: @tag.id,
+          name: @tag.name,
+          music_list: @id_list
+        }
+      }
+    rescue ActiveRecord::RecordNotFound
+      @result = {
+        status:"failed",
+        msg:"Can't find the tag"
+      }
+    end
+  end
+
+  def fav
+    music_list = current_user.get_fav_music_idList
+    @result = {
+      status:"ok", tag:{
+        music_list: music_list
+      }
+    }
   end
 
   # GET /tags/new
