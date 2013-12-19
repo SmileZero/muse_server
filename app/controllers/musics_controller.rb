@@ -1,5 +1,6 @@
 class MusicsController < ApplicationController
-  before_action :set_music, only: [:show, :edit, :update, :destroy]
+  #before_action :signed_in_user
+  before_action :set_music, only: [:edit, :update, :destroy]
 
   # GET /musics
   # GET /musics.json
@@ -10,6 +11,39 @@ class MusicsController < ApplicationController
   # GET /musics/1
   # GET /musics/1.json
   def show
+    begin
+      @music = Music.find(params[:id])
+      users_mark = current_user.users_marks.find_by_music_id params[:id]
+      mark = 0
+      if users_mark
+        mark = users_mark.mark
+      end
+      artist = @music.artist
+      album = @music.album
+      musicInfo = {
+        id: @music.id,
+        name: @music.name,
+        resource_id: 0,
+        music_id: @music.music_id,
+        location: @music.location,
+        lyric: @music.lyric,
+        artist_id: artist.artist_id,
+        artist_name: artist.name,
+        album_id: album.album_id,
+        album_name: album.name,
+        cover_url: album.cover_url,
+        mark: mark
+      }
+      @result = {
+        status:"ok",
+        music: musicInfo
+      }
+    rescue ActiveRecord::RecordNotFound
+      @result = {
+        status:"failed",
+        msg:"Can't find the music"
+      }
+    end
   end
 
   # GET /musics/new
@@ -61,6 +95,21 @@ class MusicsController < ApplicationController
     end
   end
 
+  def like
+    current_user.like Music.find(params[:id])
+    render json:{status:"ok"}
+  end
+
+  def dislike
+    current_user.dislike Music.find(params[:id])
+    render json:{status:"ok"}
+  end
+
+  def unmark
+    current_user.unmark Music.find(params[:id])
+    render json:{status:"ok"}
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_music
@@ -71,4 +120,5 @@ class MusicsController < ApplicationController
     def music_params
       params.require(:music).permit(:name, :resource_id, :music_id, :location, :artist_id, :album_id)
     end
+    
 end

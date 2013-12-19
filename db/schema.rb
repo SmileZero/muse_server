@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131212064806) do
+ActiveRecord::Schema.define(version: 20131218152121) do
 
   create_table "albums", force: true do |t|
     t.integer  "resource_id"
@@ -44,6 +44,14 @@ ActiveRecord::Schema.define(version: 20131212064806) do
     t.string   "lyric"
   end
 
+  create_table "song_graphs", force: true do |t|
+    t.integer  "song_weight"
+    t.integer  "from_music_id"
+    t.integer  "to_music_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "tag_relationships", force: true do |t|
     t.integer  "tag_id"
     t.integer  "music_id"
@@ -64,7 +72,10 @@ ActiveRecord::Schema.define(version: 20131212064806) do
     t.string   "avatar"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "remember_token"
   end
+
+  add_index "users", ["remember_token"], name: "index_users_on_remember_token", using: :btree
 
   create_table "users_marks", force: true do |t|
     t.integer  "user_id"

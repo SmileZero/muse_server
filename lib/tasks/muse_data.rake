@@ -1,7 +1,7 @@
 require "open-uri"
 
     def get_date
-      Date.current.to_s
+      "2013-12-12"
     end
 
     def parse_artist_data(nokogiri_data)

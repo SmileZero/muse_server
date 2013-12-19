@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Song weight:</strong>
+  <%= @song_graph.song_weight %>
+</p>
+
+<p>
+  <strong>From music:</strong>
+  <%= @song_graph.from_music_id %>
+</p>
+
+<p>
+  <strong>To music:</strong>
+  <%= @song_graph.to_music_id %>
+</p>
+
+<%= link_to 'Edit', edit_song_graph_path(@song_graph) %> |
+<%= link_to 'Back', song_graphs_path %>
