@@ -1,5 +1,5 @@
 class ArtistsController < ApplicationController
-  before_action :signed_in_user
+  #before_action :signed_in_user
   before_action :set_artist, only: [:show, :edit, :update, :destroy]
 
   # GET /artists

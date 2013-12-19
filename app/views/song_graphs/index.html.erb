@@ -1,0 +1,31 @@
+<h1>Listing song_graphs</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Song weight</th>
+      <th>From music</th>
+      <th>To music</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @song_graphs.each do |song_graph| %>
+      <tr>
+        <td><%= song_graph.song_weight %></td>
+        <td><%= song_graph.from_music_id %></td>
+        <td><%= song_graph.to_music_id %></td>
+        <td><%= link_to 'Show', song_graph %></td>
+        <td><%= link_to 'Edit', edit_song_graph_path(song_graph) %></td>
+        <td><%= link_to 'Destroy', song_graph, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Song graph', new_song_graph_path %>
