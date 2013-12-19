@@ -254,7 +254,100 @@ namespace :muse do
       }
     end
 
+    desc "get radio tags json"
+    task :radio_tags do
+      output_data = get_radio_tags
+      path = "public/tags/"
+        if !File.exist?(path) 
+          Dir.mkdir(path)
+        end
+        File.open("public/tags/" + get_date + "_xiami.json", "w") do |f|
+          f.write(output_data.to_json)
+        end
+    end
+
+    desc "get radio songs json"
+    task :radio_songs do
+      File.open("public/tags/" + get_date + "_xiami.json") do |f|
+          json = JSON.parse f.read
+          json.each{|tag|
+            output_data = get_radio_songs tag["radio_id"]
+             path = "public/tags/#{tag["radio_id"]}/"
+             if !File.exist?(path) 
+               Dir.mkdir(path)
+             end
+             File.open("public/tags/#{tag["radio_id"]}/" + get_date + "_xiami.json", "w") do |f|
+               f.write(output_data.to_json)
+             end
+          }
+      end
+    end
+
+    desc "radio into database"
+    task :radio_into_DS => :environment do
+      File.open("public/tags/" + get_date + "_xiami.json") do |f|
+        json = JSON.parse f.read
+        json.each{|tag_json|
+          if tag_json["radio_name"]=="虾米猜"
+            next
+          end
+          puts tag_json["radio_name"]
+          tag = Tag.find_by_name tag_json["radio_name"]
+          if tag.nil?
+            tag = Tag.create({name:tag_json["radio_name"]})
+          end
+          File.open("public/tags/#{tag_json["radio_id"]}/" + get_date + "_xiami.json") do |f|
+            songs_json = JSON.parse f.read
+
+            songs_json.each{|song|
+              artist = Artist.find_by_artist_id song["artist_id"].to_i
+              if artist
+              else
+                puts song["artist_name"]
+                artist = Artist.create({resource_id:0,name:CGI.unescapeHTML(song["artist_name"]),artist_id:song["artist_id"]});
+              end
+              music = Music.find_by_music_id song["song_id"].to_i
+              if !music
+                puts song["name"]
+                music_params = {}
+                music_params["name"] = CGI.unescapeHTML(song["name"])
+                music_params["resource_id"] = 0
+                music_params["music_id"] = song["song_id"].to_i
+                music_params["location"] = song["location"]
+                music_params["artist_id"] = artist.id
+                music_params["lyric"] = song["lyric"]
+                album = Album.find_by_album_id song["album_id"]
+                if album
+                  music_params["album_id"] = album.id
+                else
+                  # create new album
+                  album_params = {}
+                  #album = get_album_data song["album_id"]
+                  album_params["resource_id"] = 0
+                  album_params["album_id"] = song["album_id"].to_i#album["album_id"].to_i
+                  album_params["name"] = CGI.unescapeHTML(song["title"])#album["title"]
+
+                  album_params["cover_url"] = song["album_logo"][0..-7]+song["album_logo"][-4..-1]#album["album_logo"]
+                  album_params["artist_id"] = artist.id
+                  album_record = Album.create(album_params)
+                  music_params["album_id"] = album_record.id
+                end
+                music = Music.create music_params
+              end
+              music.tagged tag
+            }
+
+          end
+        }
+      end
+    end
+
+
     desc "popular songs' json into database"
     task :popular_into_DS => [:environment,:artists_into_DS,:albums_into_DS,:songs_into_DS] do
+    end
+
+    desc "get radio songs' json"
+    task :radio_info => [:radio_tags,:radio_songs] do
     end
   end
