@@ -16,3 +16,8 @@
 /tmp
 .gitignore
 .DS_Store
+
+/vendor/bundle
+/public/artists
+/public/musics
+/public/tags

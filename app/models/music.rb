@@ -9,10 +9,10 @@ class Music < ActiveRecord::Base
 	belongs_to :song_graph, :class_name => "SongGraph"
 	belongs_to :song_graph, :class_name => "SongGraph"
 
-	def tagging(tag)
+	def tagged(tag)
 		self.tag_relationship.create(tag_id:tag.id)
 	end
-	def untagging(tag)
+	def untagged(tag)
 		self.tag_relationship.find_by_tag_id(tag.id).destroy
 	end
 end
