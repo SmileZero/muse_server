@@ -80,6 +80,70 @@ require "open-uri"
       return false if albums.nil?
       albums
     end
+
+    def get_radio_tags
+      puts "radio tags"
+      url = "http://www.xiami.com/app/android/radio-category"
+      url = URI.encode(url)
+      retries = 20
+      begin
+        json = JSON.parse(open(url).read)
+      rescue
+        puts "re"
+        retries -= 1
+        if retries > 0
+          sleep 0.5 and retry
+        else
+          raise
+        end
+      end
+
+      tags=[]
+      json["categorys"].each{|category|
+        tags += category["radios"]
+      }
+      tags
+    end
+
+    def get_radio_songs(radio_id)
+      puts "radio songs: #{radio_id}"
+      url = "http://www.xiami.com/app/android/radio?id=#{radio_id}"
+      url = URI.encode(url)
+      retries = 20
+      begin
+        json = JSON.parse(open(url).read)
+      rescue
+        puts "re"
+        retries -= 1
+        if retries > 0
+          sleep 0.5 and retry
+        else
+          raise
+        end
+      end
+
+      songs = json["radio"]["songs"]
+      songs
+    end
+
+    def get_translate_from_google(word)
+      url = URI.encode(word)
+      url = "http://translate.google.com/#zh-CN/en/#{url}"
+      puts url
+
+      charset = nil
+      html = open(url) do |f|
+        charset = f.charset
+        f.read
+      end
+      doc = Nokogiri::HTML.parse(html, nil, charset)
+      str = ""
+      doc.css('#result_box > .hps').each{|w|
+        str += "#{w} "
+      }
+      str.strip
+    end
+
 namespace :muse do 
     desc "get popular artists json"
     task :popular_artists do
