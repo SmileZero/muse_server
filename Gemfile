@@ -35,7 +35,7 @@ end
 gem 'carrierwave'
 
 # Use ActiveModel has_secure_password
-gem 'bcrypt-ruby', '3.1.1.rc1', :require => 'bcrypt'
+gem 'bcrypt-ruby'
 
 ENV['NOKOGIRI_USE_SYSTEM_LIBRARIES'] = 'YES'
 gem "nokogiri", "1.4.7"

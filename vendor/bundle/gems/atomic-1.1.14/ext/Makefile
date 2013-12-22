@@ -11,12 +11,12 @@ ECHO = $(ECHO1:0=@echo)
 #### Start of system configuration section. ####
 
 srcdir = .
-topdir = /Users/yan_runchen/.rbenv/versions/2.0.0-p247/include/ruby-2.0.0
+topdir = /Users/zhu_peijun/.rbenv/versions/2.0.0-p247/include/ruby-2.0.0
 hdrdir = $(topdir)
-arch_hdrdir = /Users/yan_runchen/.rbenv/versions/2.0.0-p247/include/ruby-2.0.0/x86_64-darwin12.5.0
+arch_hdrdir = /Users/zhu_peijun/.rbenv/versions/2.0.0-p247/include/ruby-2.0.0/x86_64-darwin12.5.0
 PATH_SEPARATOR = :
 VPATH = $(srcdir):$(arch_hdrdir)/ruby:$(hdrdir)/ruby
-prefix = /Users/yan_runchen/.rbenv/versions/2.0.0-p247
+prefix = /Users/zhu_peijun/.rbenv/versions/2.0.0-p247
 rubysitearchprefix = $(rubylibprefix)/$(sitearch)
 rubyarchprefix = $(rubylibprefix)/$(arch)
 rubylibprefix = $(libdir)/$(RUBY_BASE_NAME)
@@ -30,8 +30,8 @@ rubyhdrdir = $(includedir)/$(RUBY_VERSION_NAME)
 vendorarchdir = $(vendorlibdir)/$(sitearch)
 vendorlibdir = $(vendordir)/$(ruby_version)
 vendordir = $(rubylibprefix)/vendor_ruby
-sitearchdir = ./.gem.20131206-4306-h4x0sj
-sitelibdir = ./.gem.20131206-4306-h4x0sj
+sitearchdir = ./.gem.20131222-4437-1nne27j
+sitelibdir = ./.gem.20131222-4437-1nne27j
 sitedir = $(rubylibprefix)/site_ruby
 rubyarchdir = $(rubylibdir)/$(arch)
 rubylibdir = $(rubylibprefix)/$(ruby_version)
@@ -81,9 +81,9 @@ CCDLFLAGS = -fno-common
 CFLAGS   = $(CCDLFLAGS)  -O3 -Wno-error=shorten-64-to-32  -pipe $(ARCH_FLAG)
 INCFLAGS = -I. -I$(arch_hdrdir) -I$(hdrdir)/ruby/backward -I$(hdrdir) -I$(srcdir)
 DEFS     = 
-CPPFLAGS = -DHAVE_GCC_CAS -I'/Users/yan_runchen/.rbenv/versions/2.0.0-p247/include'  -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT $(DEFS) $(cppflags)
+CPPFLAGS = -DHAVE_GCC_CAS -I'/Users/zhu_peijun/.rbenv/versions/2.0.0-p247/include'  -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT $(DEFS) $(cppflags)
 CXXFLAGS = $(CCDLFLAGS) $(cxxflags) $(ARCH_FLAG)
-ldflags  = -L. -L'/Users/yan_runchen/.rbenv/versions/2.0.0-p247/lib' 
+ldflags  = -L. -L'/Users/zhu_peijun/.rbenv/versions/2.0.0-p247/lib' 
 dldflags = -Wl,-undefined,dynamic_lookup -Wl,-multiply_defined,suppress 
 ARCH_FLAG = 
 DLDFLAGS = $(ldflags) $(dldflags) $(ARCH_FLAG)
