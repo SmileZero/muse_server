@@ -11,7 +11,7 @@ class SongGraphsController < ApplicationController
     liked_music.each do |mark|
 
       finded_music = SongGraph.where(
-        "from_music_id = ? and to_music_id not in (select id from users_marks where user_id = ? and mark = 1)", 
+        "from_music_id = ? and to_music_id not in (select id from users_marks where user_id = ? and mark != 0)", 
         mark.music_id, current_user.id).order("song_weight desc").limit(1)
 
       if finded_music.count != 0
