@@ -12,6 +12,14 @@ class SessionsController < ApplicationController
 	    else
 	    	render json:{status:"failed",msg:"remember_token is incorrent"}
 	    end
+    elsif params[:session][:resource_id]
+      @user = User.find_by_email(params[:session][:email])
+      if @user && @user.password == params[:session][:password] && @user.resource_id == params[:session][:resource_id]
+        sign_in @user
+        render json:{status:"ok", user: @user}
+      else
+        render json:{status:"failed",msg:"facebook sign in failed"}
+      end
     else
   	  @user = User.find_by_email(params[:session][:email])
   	  if @user && @user.password == params[:session][:password]

@@ -11,7 +11,7 @@ class SongGraphsController < ApplicationController
     liked_music.each do |mark|
 
       finded_music = SongGraph.where(
-        "from_music_id = ? and to_music_id not in (select id from users_marks where user_id = ? and mark != 0)", 
+        "from_music_id = ? and to_music_id not in (select music_id from users_marks where user_id = ? and mark != 0)", 
         mark.music_id, current_user.id).order("song_weight desc").limit(1)
 
       if finded_music.count != 0
@@ -19,12 +19,15 @@ class SongGraphsController < ApplicationController
         break
       end
       
-    end 
+    end
 
     result = { status:"none" }
 
     if recemond_music != nil
       result = { status:"ok", music_id: recemond_music.to_music_id }
+    else
+      not_hate_music = Music.where("id not in (select music_id from users_marks where user_id = ? and mark == -1)").order("RAND()").limit(1)
+      result = { status:"ok", music_id: not_hate_music.id }
     end
 
 
