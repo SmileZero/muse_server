@@ -265,21 +265,25 @@ namespace :muse do
       artists = Artist.all
       artists.each{|artist|
         File.open("public/artists/#{artist.artist_id}/" + get_date + "_xiami.json") do |f|
-          json = JSON.parse f.read
-          json.each{|album|
-            if !Album.find_by_album_id album["album_id"].to_i
-              puts "album: #{album["title"]}"
-              album_params = {}
-              album_params["resource_id"] = 0
-              album_params["album_id"] = album["album_id"].to_i
-              album_params["name"] = CGI.unescapeHTML(album["title"])
-              cover_url = album["album_logo"]
-              suffix = cover_url.rindex "."
-              album_params["cover_url"] = cover_url[0..(suffix-3)]+cover_url[suffix..-1]
-              album_params["artist_id"] = artist.id
-              album_record = Album.create(album_params)
-            end
-          }
+          begin
+            json = JSON.parse f.read
+            json.each{|album|
+              if !Album.find_by_album_id album["album_id"].to_i
+                puts "album: #{album["title"]}"
+                album_params = {}
+                album_params["resource_id"] = 0
+                album_params["album_id"] = album["album_id"].to_i
+                album_params["name"] = CGI.unescapeHTML(album["title"])
+                cover_url = album["album_logo"]
+                suffix = cover_url.rindex "."
+                album_params["cover_url"] = cover_url[0..(suffix-3)]+cover_url[suffix..-1]
+                album_params["artist_id"] = artist.id
+                album_record = Album.create(album_params)
+              end
+            }
+          rescue
+            puts "ERROR: artist_id: #{artist.artist_id}"
+          end
         end
       }
     end
