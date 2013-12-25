@@ -1,4 +1,5 @@
 require "open-uri"
+require "google_translate"
 
     def get_date
       "2013-12-12"
@@ -127,21 +128,8 @@ require "open-uri"
     end
 
     def get_translate_from_google(word)
-      url = URI.encode(word)
-      url = "http://translate.google.com/#zh-CN/en/#{url}"
-      puts url
-
-      charset = nil
-      html = open(url) do |f|
-        charset = f.charset
-        f.read
-      end
-      doc = Nokogiri::HTML.parse(html, nil, charset)
-      str = ""
-      doc.css('#result_box > .hps').each{|w|
-        str += "#{w} "
-      }
-      str.strip
+      g = GoogleTranslate.new
+      puts g.translate("zh-CN","en",word)["sentences"][0]["trans"]
     end
 
 namespace :muse do 
@@ -149,8 +137,9 @@ namespace :muse do
     task :popular_artists do
       puts "getting popular artists json"
       i = 1
-      puts "page: #{i}"
+      puts "popular page: #{i}"
       url = "http://www.xiami.com/artist/index/c/2/type/0/class/0/page/#{i}"
+      #http://www.xiami.com/artist/index/c/2/type/3/class/0/page/
       url = URI.encode(url)
 
       charset = nil
@@ -168,7 +157,7 @@ namespace :muse do
       other_page_data = []
       if max_page_number != 0
         for i in 2..max_page_number
-          puts "page: #{i}"
+          puts "popular page: #{i}"
           next_page_url = "http://www.xiami.com/artist/index/c/2/type/0/class/0/page/#{i}"
           charset = nil
           html2 = open(next_page_url) do |f|
@@ -182,6 +171,41 @@ namespace :muse do
       end
 
       output_data = first_page_data + other_page_data
+
+      puts "japanese page: 1"
+      url = "http://www.xiami.com/artist/index/c/2/type/3/class/0/page/1"
+      url = URI.encode(url)
+
+      charset = nil
+      html = open(url) do |f|
+        charset = f.charset
+        f.read
+      end
+      doc = Nokogiri::HTML.parse(html, nil, charset)
+
+      page_number = doc.css('.all_page > a').to_a.last(2).first
+      max_page_number = page_number.nil? ? 0 : page_number.inner_text.to_i
+
+      first_page_data = parse_artist_data(doc)
+      output_data = output_data + first_page_data
+
+      other_page_data = []
+      if max_page_number != 0
+        for i in 2..max_page_number
+          puts "japanese page: #{i}"
+          next_page_url = "http://www.xiami.com/artist/index/c/2/type/3/class/0/page/#{i}"
+          charset = nil
+          html2 = open(next_page_url) do |f|
+            charset = f.charset
+            f.read
+          end
+          next_page_doc = Nokogiri::HTML.parse(html2, nil, charset)
+
+          other_page_data += parse_artist_data(next_page_doc)
+        end
+      end
+
+      output_data = output_data + other_page_data
 
       File.open("public/artists/" + get_date + "_xiami.json", "w") do |f|
         f.write(output_data.to_json)
@@ -358,10 +382,11 @@ namespace :muse do
           if tag_json["radio_name"]=="虾米猜"
             next
           end
-          puts tag_json["radio_name"]
-          tag = Tag.find_by_name tag_json["radio_name"]
+          tag_en = get_translate_from_google tag_json["radio_name"].strip
+          puts tag_en
+          tag = Tag.find_by_name tag_en
           if tag.nil?
-            tag = Tag.create({name:tag_json["radio_name"]})
+            tag = Tag.create({name:tag_en})
           end
           File.open("public/tags/#{tag_json["radio_id"]}/" + get_date + "_xiami.json") do |f|
             songs_json = JSON.parse f.read
@@ -410,9 +435,34 @@ namespace :muse do
       end
     end
 
+    desc "album_songs into database(*)"
+    task :album_songs_into_DS => :environment do
+      artists = Artist.all
+      artists.each{|artist|
+        artist.albums.each{|album|
+          File.open("public/artists/#{artist.artist_id}/albums/#{album.album_id}/" + get_date + "_xiami.json") do |f|
+            json = JSON.parse f.read
+            json.each{|song|
+              if !Music.find_by_music_id song["song_id"].to_i
+                puts CGI.unescapeHTML(song["name"])
+                music_params = {}
+                music_params["name"] = CGI.unescapeHTML(song["name"])
+                music_params["resource_id"] = 0
+                music_params["music_id"] = song["song_id"].to_i
+                music_params["location"] = song["location"]
+                music_params["artist_id"] = artist.id
+                music_params["lyric"] = song["lyric"]
+                music_params["album_id"] = album.id
+                Music.create music_params
+              end
+            }
+          end
+        }
+      }
+    end
 
     desc "popular songs' json into database(*)"
-    task :popular_into_DS => [:environment,:artists_into_DS,:albums_into_DS,:songs_into_DS] do
+    task :popular_into_DS => [:environment,:artists_into_DS,:albums_into_DS,:album_songs_into_DS] do
     end
 
     desc "get radio songs' json(*)"

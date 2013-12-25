@@ -2,9 +2,11 @@ require 'bcrypt'
 
 class User < ActiveRecord::Base
 	mount_uploader :avatar, AvatarUploader
-	validates :email, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i, on: :create }, presence:true, uniqueness: true
+	validates :email, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i, on: :create }, presence:true,
+                    uniqueness: { case_sensitive: false }
 	validates :name, presence:true
 	has_many :users_marks
+  before_save { self.email = email.downcase }
 
 	include BCrypt
 
