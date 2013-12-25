@@ -43,8 +43,17 @@ ENV['NOKOGIRI_USE_SYSTEM_LIBRARIES'] = 'YES'
 gem "nokogiri", "1.4.7"
 gem 'execjs'
 
+group :deployment do
+  gem 'capistrano', '2.15.5'
+  gem 'capistrano_colors'
+  gem 'capistrano-ext'
+  gem 'capistrano_rsync_with_remote_cache'
+  gem 'rvm-capistrano'
+end
+
 # Use unicorn as the app server
-# gem 'unicorn'
+gem 'unicorn'
+gem 'therubyracer'
 
 # Use Capistrano for deployment
 # gem 'capistrano', group: :development
