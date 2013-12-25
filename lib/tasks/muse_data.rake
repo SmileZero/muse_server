@@ -249,7 +249,9 @@ namespace :muse do
               album_params["resource_id"] = 0
               album_params["album_id"] = album["album_id"].to_i
               album_params["name"] = CGI.unescapeHTML(album["title"])
-              album_params["cover_url"] = album["album_logo"][0..-7]+album["album_logo"][-4..-1]
+              cover_url = album["album_logo"]
+              suffix = cover_url.rindex "."
+              album_params["cover_url"] = cover_url[0..(suffix-3)]+cover_url[suffix..-1]
               album_params["artist_id"] = artist.id
               album_record = Album.create(album_params)
             end
@@ -285,8 +287,9 @@ namespace :muse do
                 album_params["resource_id"] = 0
                 album_params["album_id"] = song["album_id"].to_i#album["album_id"].to_i
                 album_params["name"] = CGI.unescapeHTML(song["title"])#album["title"]
-
-                album_params["cover_url"] = song["album_logo"][0..-7]+song["album_logo"][-4..-1]#album["album_logo"]
+                cover_url = song["album_logo"]
+                suffix = cover_url.rindex "."
+                album_params["cover_url"] = cover_url[0..(suffix-3)]+cover_url[suffix..-1]#album["album_logo"]
                 album_params["artist_id"] = artist.id
                 album_record = Album.create(album_params)
                 music_params["album_id"] = album_record.id
@@ -347,7 +350,7 @@ namespace :muse do
       end
     end
 
-    desc "radio into database"
+    desc "radio into database(*)"
     task :radio_into_DS => :environment do
       File.open("public/tags/" + get_date + "_xiami.json") do |f|
         json = JSON.parse f.read
@@ -390,8 +393,9 @@ namespace :muse do
                   album_params["resource_id"] = 0
                   album_params["album_id"] = song["album_id"].to_i#album["album_id"].to_i
                   album_params["name"] = CGI.unescapeHTML(song["title"])#album["title"]
-
-                  album_params["cover_url"] = song["album_logo"][0..-7]+song["album_logo"][-4..-1]#album["album_logo"]
+                  cover_url = song["album_logo"]
+                  suffix = cover_url.rindex "."
+                  album_params["cover_url"] = cover_url[0..(suffix-3)]+cover_url[suffix..-1]
                   album_params["artist_id"] = artist.id
                   album_record = Album.create(album_params)
                   music_params["album_id"] = album_record.id
@@ -407,11 +411,11 @@ namespace :muse do
     end
 
 
-    desc "popular songs' json into database"
+    desc "popular songs' json into database(*)"
     task :popular_into_DS => [:environment,:artists_into_DS,:albums_into_DS,:songs_into_DS] do
     end
 
-    desc "get radio songs' json"
+    desc "get radio songs' json(*)"
     task :radio_info => [:radio_tags,:radio_songs] do
     end
   end
