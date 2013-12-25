@@ -3,19 +3,24 @@ MuseServer::Application.routes.draw do
   resources :song_graphs
 
   get '/signup' => 'users#new'
-  get '/login' => 'sessions#new'
+  #get '/login' => 'sessions#new'
   post '/signin' => 'sessions#create'
   delete '/signout' => 'sessions#destroy'
   get '/getCSRFToken' => 'sessions#getCSRFToken'
   get '/fav' => 'tags#fav'
 
-  resources :users
+  resources :users, only:[:create, :show, :update] do 
+    post "update_password"
+    collection do
+      post "forgot_password"
+    end
+  end
 
   resources :users_marks
 
-  resources :albums
+  resources :albums, only:[:index, :show]
 
-  resources :musics do
+  resources :musics, only:[:index, :show] do
     member do
       get "like"
       get "dislike"
@@ -26,11 +31,11 @@ MuseServer::Application.routes.draw do
     end
   end
 
-  resources :tags
+  resources :tags, only:[:index, :show]
 
-  resources :tag_relationships
+  resources :tag_relationships, only:[:index, :show]
 
-  resources :artists
+  resources :artists, only:[:index, :show]
 
   root 'static_page#home'
   # The priority is based upon order of creation: first created -> highest priority.

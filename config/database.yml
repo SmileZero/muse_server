@@ -35,5 +35,5 @@ production:
   database: muse_server_production
   pool: 5
   username: root
-  password: '123456'
-  socket: /tmp/mysql.sock
+  password: 'monster007'
+  socket: /var/run/mysqld/mysql.sock

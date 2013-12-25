@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
-
+  before_action :correct_user,   only: [:edit, :update, :destroy]
   # GET /users
   # GET /users.json
   def index
@@ -67,6 +67,36 @@ class UsersController < ApplicationController
     end
   end
 
+  def forgot_password
+    @user = User.find_by_email(user_params[:email])
+    if @user
+      random_password = Array.new(10).map { (65 + rand(58)).chr }.join
+      @user.password = random_password
+      if @user.save
+        UserMailer.create_and_deliver_password_change(@user, random_password).deliver
+        render json:{status:"ok"}
+      else
+        render json:{status:"failed",msg:"Password reset failed"}
+      end
+    else
+      render json:{status:"failed",msg:"Can't find the email"}
+    end
+  end
+
+  def update_password
+    @user = User.find_by_email(user_params[:email]) #params[:old_pwd] params[:new_pwd]
+    if @user && @user.password == user_params[:old_pwd]
+      @user.password = user_params[:new_pwd]
+      if @user.save
+        render json:{status:"ok"}
+      else
+        render json:{status:"failed",msg:"new password can not be updated"}
+      end
+    else
+      render json:{status:"failed",msg:"email/password is incorrect"}
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user
@@ -75,6 +105,11 @@ class UsersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def user_params
-      params.require(:user).permit(:email, :password_hash, :name, :avatar, :resource_id)
+      params.require(:user).permit(:email, :password_hash, :name, :avatar, :resource_id ,:old_pwd, :new_pwd)
+    end
+
+    def correct_user
+      @user = User.find(params[:id])
+      render json:{status:"failed", msg:"You have no permission!"} unless current_user?(@user)
     end
 end
