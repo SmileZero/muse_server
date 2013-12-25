@@ -264,9 +264,9 @@ namespace :muse do
       puts "adding albums into database"
       artists = Artist.all
       artists.each{|artist|
+        begin
         File.open("public/artists/#{artist.artist_id}/" + get_date + "_xiami.json") do |f|
-          begin
-            json = JSON.parse f.read
+          json = JSON.parse f.read
             json.each{|album|
               if !Album.find_by_album_id album["album_id"].to_i
                 puts "album: #{album["title"]}"
@@ -281,9 +281,9 @@ namespace :muse do
                 album_record = Album.create(album_params)
               end
             }
-          rescue
-            puts "ERROR: artist_id: #{artist.artist_id}"
-          end
+        end
+        rescue
+          puts "ERROR: artist_id: #{artist.artist_id}"
         end
       }
     end
@@ -380,6 +380,7 @@ namespace :muse do
 
     desc "radio into database(*)"
     task :radio_into_DS => :environment do
+      begin
       File.open("public/tags/" + get_date + "_xiami.json") do |f|
         json = JSON.parse f.read
         json.each{|tag_json|
@@ -437,6 +438,9 @@ namespace :muse do
           end
         }
       end
+      rescue
+        puts "ERROR"
+      end
     end
 
     desc "album_songs into database(*)"
@@ -444,6 +448,7 @@ namespace :muse do
       artists = Artist.all
       artists.each{|artist|
         artist.albums.each{|album|
+          begin
           File.open("public/artists/#{artist.artist_id}/albums/#{album.album_id}/" + get_date + "_xiami.json") do |f|
             json = JSON.parse f.read
             json.each{|song|
@@ -460,6 +465,9 @@ namespace :muse do
                 Music.create music_params
               end
             }
+          end
+          rescue
+            puts "ERROR: album_id: #{album.album_id}"
           end
         }
       }
