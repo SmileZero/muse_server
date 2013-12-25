@@ -129,7 +129,7 @@ require "google_translate"
 
     def get_translate_from_google(word)
       g = GoogleTranslate.new
-      puts g.translate("zh-CN","en",word)["sentences"][0]["trans"]
+      g.translate("zh-CN","en",word)["sentences"][0]["trans"]
     end
 
 namespace :muse do 
@@ -388,11 +388,12 @@ namespace :muse do
             next
           end
           tag_en = get_translate_from_google tag_json["radio_name"].strip
-          puts tag_en
           tag = Tag.find_by_name tag_en
           if tag.nil?
+            puts tag_en
             tag = Tag.create({name:tag_en})
           end
+          begin
           File.open("public/tags/#{tag_json["radio_id"]}/" + get_date + "_xiami.json") do |f|
             songs_json = JSON.parse f.read
 
@@ -434,7 +435,9 @@ namespace :muse do
               end
               music.tagged tag
             }
-
+          end
+          rescue
+            puts "ERROR: tag_id: #{tag_json["radio_name"]}"
           end
         }
       end
