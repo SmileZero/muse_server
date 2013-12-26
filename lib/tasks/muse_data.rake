@@ -477,15 +477,19 @@ namespace :muse do
             json = JSON.parse f.read
             json.each{|song|
               if !Music.find_by_music_id song["song_id"].to_i
-                song_iphone = get_song_from_xiami_by_iphone song["song_id"].to_i
-                puts CGI.unescapeHTML(song_iphone["name"])
+                puts CGI.unescapeHTML(song["name"])
                 music_params = {}
-                music_params["name"] = CGI.unescapeHTML(song_iphone["name"])
+                music_params["name"] = CGI.unescapeHTML(song["name"])
                 music_params["resource_id"] = 0
-                music_params["music_id"] = song_iphone["song_id"].to_i
-                music_params["location"] = song_iphone["location"]
+                music_params["music_id"] = song["song_id"].to_i
+                location = song["location"]
+                if song["location"].include? "?auth_key"
+                  song_iphone = get_song_from_xiami_by_iphone song["song_id"].to_i
+                  location = song_iphone["location"]
+                end
+                music_params["location"] = location
                 music_params["artist_id"] = artist.id
-                music_params["lyric"] = song_iphone["lyric"]
+                music_params["lyric"] = song["lyric"]
                 music_params["album_id"] = album.id
                 Music.create music_params
               end
