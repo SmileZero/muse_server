@@ -488,19 +488,6 @@ namespace :muse do
                 music_params["lyric"] = song_iphone["lyric"]
                 music_params["album_id"] = album.id
                 Music.create music_params
-              else
-                song_iphone = get_song_from_xiami_by_iphone song["song_id"].to_i
-                puts CGI.unescapeHTML(song_iphone["name"])
-                music_params = {}
-                music_params["name"] = CGI.unescapeHTML(song_iphone["name"])
-                music_params["resource_id"] = 0
-                music_params["music_id"] = song_iphone["song_id"].to_i
-                music_params["location"] = song_iphone["location"]
-                music_params["artist_id"] = artist.id
-                music_params["lyric"] = song_iphone["lyric"]
-                music_params["album_id"] = album.id
-                m = Music.find_by_music_id song["song_id"].to_i
-                m.update_attributes music_params
               end
             }
           end
@@ -518,4 +505,14 @@ namespace :muse do
     desc "get radio songs' json(*)"
     task :radio_info => [:radio_tags,:radio_songs] do
     end
+
+    desc "refresh songs into database"
+    task :refresh_songs_into_DS => :environment do
+      Music.where("location LIKE '%?auth_key%' OR location is NULL").each{|song|
+        puts song.name
+        song_iphone = get_song_from_xiami_by_iphone song.music_id
+        song.update_attribute "location",song_iphone["location"]
+      }
+    end
+
   end
