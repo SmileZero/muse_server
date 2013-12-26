@@ -60,6 +60,27 @@ require "google_translate"
       songs
     end
 
+    def get_song_from_xiami_by_iphone(music_id)
+      puts "music_id: #{music_id}"
+      url = "http://www.xiami.com/app/iphone/song/id/#{music_id}"
+      url = URI.encode(url)
+      retries = 20
+      begin
+        json = JSON.parse(open(url).read)
+      rescue
+        puts "re"
+        retries -= 1
+        if retries > 0
+          sleep 0.5 and retry
+        else
+          raise
+        end
+      end
+
+      song = json
+      song
+    end
+
     def get_album_data(artist_id)
       puts "artist_id: #{artist_id}"
       url = "http://www.xiami.com/app/android/artist-albums?id=#{artist_id}"
@@ -456,16 +477,30 @@ namespace :muse do
             json = JSON.parse f.read
             json.each{|song|
               if !Music.find_by_music_id song["song_id"].to_i
-                puts CGI.unescapeHTML(song["name"])
+                song_iphone = get_song_from_xiami_by_iphone song["song_id"].to_i
+                puts CGI.unescapeHTML(song_iphone["name"])
                 music_params = {}
-                music_params["name"] = CGI.unescapeHTML(song["name"])
+                music_params["name"] = CGI.unescapeHTML(song_iphone["name"])
                 music_params["resource_id"] = 0
-                music_params["music_id"] = song["song_id"].to_i
-                music_params["location"] = song["location"]
+                music_params["music_id"] = song_iphone["song_id"].to_i
+                music_params["location"] = song_iphone["location"]
                 music_params["artist_id"] = artist.id
-                music_params["lyric"] = song["lyric"]
+                music_params["lyric"] = song_iphone["lyric"]
                 music_params["album_id"] = album.id
                 Music.create music_params
+              else
+                song_iphone = get_song_from_xiami_by_iphone song["song_id"].to_i
+                puts CGI.unescapeHTML(song_iphone["name"])
+                music_params = {}
+                music_params["name"] = CGI.unescapeHTML(song_iphone["name"])
+                music_params["resource_id"] = 0
+                music_params["music_id"] = song_iphone["song_id"].to_i
+                music_params["location"] = song_iphone["location"]
+                music_params["artist_id"] = artist.id
+                music_params["lyric"] = song_iphone["lyric"]
+                music_params["album_id"] = album.id
+                m = Music.find_by_music_id song["song_id"].to_i
+                m.update_attributes music_params
               end
             }
           end

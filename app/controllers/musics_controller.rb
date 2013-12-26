@@ -80,10 +80,11 @@ class MusicsController < ApplicationController
           artist = Artist.create({artist_id: @music["artist_id"],name: CGI.unescapeHTML(@music["artist_name"]), resource_id: 0})
         end
         if !album
-          cover_url = @music["album_logo"][0..-7]+@music["album_logo"][-4..-1]
-          album = Album.create({resource_id: 0,artist_id: artist.id ,album_id: @music["album_id"], name: CGI.unescapeHTML(@music["album_name"]), cover_url: cover_url})
+          suffix = @music["album_logo"].rindex "."
+          cover_url = @music["album_logo"][0..(suffix-3)]+@music["album_logo"][suffix..-1]
+          album = Album.create({resource_id: 0,artist_id: artist.id ,album_id: @music["album_id"], name: CGI.unescapeHTML(@music["title"]), cover_url: cover_url})
         end
-        @music = Music.create({music_id: @music["song_id"], resource_id: 0, album_id: album.id, artist_id: artist.id, name: CGI.unescapeHTML(@music["song_name"]), location: @music["song_location"], lyric: @music["song_lrc"]})
+        @music = Music.create({music_id: @music["song_id"], resource_id: 0, album_id: album.id, artist_id: artist.id, name: CGI.unescapeHTML(@music["name"]), location: @music["location"], lyric: @music["lyric"]})
         musicInfo = {
           id: @music.id,
           name: @music.name,
@@ -231,7 +232,7 @@ private
     end
     def get_song_from_xiami(music_id)
       puts "music_id: #{music_id}"
-      url = "http://www.xiami.com/app/android/song?id=#{music_id}"
+      url = "http://www.xiami.com/app/iphone/song/id/#{music_id}"
       url = URI.encode(url)
       retries = 20
       begin
@@ -246,7 +247,7 @@ private
         end
       end
 
-      song = json["song"]
+      song = json
       song
     end
 end
