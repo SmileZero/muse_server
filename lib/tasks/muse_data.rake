@@ -2,7 +2,8 @@ require "open-uri"
 require "google_translate"
 
     def get_date
-      "2013-12-12"
+      "2014-01-01"
+      #DateTime.now.to_date.to_s
     end
 
     def parse_artist_data(nokogiri_data)
@@ -153,6 +154,17 @@ require "google_translate"
       g.translate("zh-CN","en",word)["sentences"][0]["trans"]
     end
 
+    def parse_japan_artist_data(nokogiri_data)
+      data =[]
+      nokogiri_data.css('.artist_item100_block > .name > a').each do |table_data|
+        name = table_data.css("strong").inner_text
+        artist_id = table_data['href'][8..-1]
+        tmphash = {name:name, artist_id:artist_id}
+        data << tmphash
+      end
+      data
+    end
+
 namespace :muse do 
     desc "get popular artists json"
     task :popular_artists do
@@ -242,7 +254,7 @@ namespace :muse do
             if Artist.find_by_artist_id artist["artist_id"].to_i
             else
               puts artist["name"]
-              Artist.create({resource_id:0,name:CGI.unescapeHTML(artist["name"]),artist_id:artist["artist_id"]});
+              Artist.create({resource_id:0,name:CGI.unescapeHTML(artist["name"]),artist_id:artist["artist_id"]})
             end
         }
       end
@@ -423,7 +435,7 @@ namespace :muse do
               if artist
               else
                 puts song["artist_name"]
-                artist = Artist.create({resource_id:0,name:CGI.unescapeHTML(song["artist_name"]),artist_id:song["artist_id"]});
+                artist = Artist.create({resource_id:0,name:CGI.unescapeHTML(song["artist_name"]),artist_id:song["artist_id"]})
               end
               music = Music.find_by_music_id song["song_id"].to_i
               if !music
@@ -517,6 +529,66 @@ namespace :muse do
         song_iphone = get_song_from_xiami_by_iphone song.music_id
         song.update_attribute "location",song_iphone["location"]
       }
+    end
+
+    desc "get Japanese artists json"
+    task :japanese_artists do
+      puts "getting Japanese artists json"
+      i = 1
+      puts "Japanese page: #{i}"
+      url = "http://www.xiami.com/artist/tag/%E6%97%A5%E6%9C%AC/page/#{i}"
+
+      charset = nil
+      html = open(url) do |f|
+        charset = f.charset
+        f.read
+      end
+      doc = Nokogiri::HTML.parse(html, nil, charset)
+
+      page_number = doc.css('.all_page > a').to_a.last(2).first
+      max_page_number = page_number.nil? ? 0 : page_number.inner_text.to_i
+
+      first_page_data = parse_japan_artist_data(doc)
+
+      other_page_data = []
+      if max_page_number != 0
+        for i in 2..max_page_number
+          puts "Japanese page: #{i}"
+          next_page_url = "http://www.xiami.com/artist/tag/%E6%97%A5%E6%9C%AC/page/#{i}"
+          charset = nil
+          html2 = open(next_page_url) do |f|
+            charset = f.charset
+            f.read
+          end
+          next_page_doc = Nokogiri::HTML.parse(html2, nil, charset)
+
+          other_page_data += parse_japan_artist_data(next_page_doc)
+        end
+      end
+
+      output_data = first_page_data + other_page_data
+
+      File.open("public/artists/" + get_date + "_xiami.json", "w") do |f|
+        f.write(output_data.to_json)
+      end
+    end
+
+    desc "add Japanese artist into database"
+    task :japanese_artists_into_DS => :environment do
+      puts "adding japanese artist into database"
+      File.open("public/artists/" + get_date + "_xiami.json") do |f|
+        json = JSON.parse(f.read)
+        json.each{|artist|
+            this_artist = Artist.find_by_artist_id artist["artist_id"].to_i
+            if this_artist
+              this_artist.set_country "Japan"
+            else
+              puts artist["name"]
+              this_artist = Artist.create({resource_id:0,name:CGI.unescapeHTML(artist["name"]),artist_id:artist["artist_id"]})
+              this_artist.set_country "Japan"
+            end
+        }
+      end
     end
 
   end

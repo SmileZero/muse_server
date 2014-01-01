@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131224075818) do
+ActiveRecord::Schema.define(version: 20140101020605) do
 
   create_table "albums", force: true do |t|
     t.integer  "resource_id"
@@ -30,7 +30,16 @@ ActiveRecord::Schema.define(version: 20131224075818) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "country_id",  default: 1
   end
+
+  create_table "countries", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "countries", ["name"], name: "index_countries_on_name", using: :btree
 
   create_table "musics", force: true do |t|
     t.string   "name"

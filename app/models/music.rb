@@ -15,4 +15,8 @@ class Music < ActiveRecord::Base
 	def untagged(tag)
 		self.tag_relationship.find_by_tag_id(tag.id).destroy
 	end
+
+	def country
+		self.artist.country
+	end
 end
