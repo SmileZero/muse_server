@@ -248,6 +248,11 @@ private
       end
 
       song = json
+      if song["location"].include? "?auth_key"
+        location = song["location"]
+        sub_index = location.index "?auth_key"
+        song["location"] = location.gsub("m5.","m1.")[0..(sub_index-1)]
+      end
       song
     end
 end
