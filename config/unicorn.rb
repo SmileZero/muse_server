@@ -3,7 +3,7 @@ application = 'muse_server'
 listen "/tmp/unicorn_#{application}.sock"
 pid "/tmp/unicorn_#{application}.pid"
 
-worker_processes 6
+worker_processes 2
 preload_app true
 
 # capistrano 用に RAILS_ROOT を指定
