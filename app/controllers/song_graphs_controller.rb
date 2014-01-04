@@ -26,7 +26,7 @@ class SongGraphsController < ApplicationController
     if recemond_music != nil
       result = { status:"ok", music_id: recemond_music.to_music_id }
     else
-      not_hate_music = Music.where("id not in (select music_id from users_marks where user_id = ? and mark == -1)").order("RAND()").limit(1)
+      not_hate_music = Music.where("id not in (select music_id from users_marks where user_id = ? and mark = -1)", current_user.id).order("RAND()").limit(1)[0]
       result = { status:"ok", music_id: not_hate_music.id }
     end
 
