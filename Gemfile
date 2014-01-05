@@ -35,9 +35,9 @@ end
 gem 'carrierwave'
 
 # Use ActiveModel has_secure_password
-gem 'bcrypt-ruby'
+gem 'bcrypt-ruby', '3.1.1.rc1'
 
-gem 'google-translate', :git => 'git@github.com:SmileZero/google-translate.git'
+gem 'google-translate', :git => 'https://github.com/SmileZero/google-translate.git'
 
 ENV['NOKOGIRI_USE_SYSTEM_LIBRARIES'] = 'YES'
 gem "nokogiri", "1.4.7"

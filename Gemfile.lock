@@ -1,5 +1,5 @@
 GIT
-  remote: git@github.com:SmileZero/google-translate.git
+  remote: https://github.com/SmileZero/google-translate.git
   revision: e732b27bb645e09ffeff850f93a94d6be552aca9
   specs:
     google-translate (1.0.1)
@@ -35,7 +35,7 @@ GEM
       tzinfo (~> 0.3.37)
     arel (4.0.1)
     atomic (1.1.14)
-    bcrypt-ruby (3.1.2)
+    bcrypt-ruby (3.1.1.rc1)
     builder (3.1.4)
     capistrano (2.15.5)
       highline
@@ -155,7 +155,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bcrypt-ruby
+  bcrypt-ruby (= 3.1.1.rc1)
   capistrano (= 2.15.5)
   capistrano-ext
   capistrano_colors

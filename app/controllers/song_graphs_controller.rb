@@ -4,32 +4,13 @@ class SongGraphsController < ApplicationController
   # GET /song_graphs
   # GET /song_graphs.json
   def index
-    liked_music = UsersMark.where("user_id = ? and mark = 1", current_user.id)
 
-    recemond_music = nil
+    not_hate_music = Music.where("id not in (select music_id from users_marks where user_id = ? and mark = -1)", current_user.id).order("RAND()").limit(1)[0]
+    result = { status:"ok", music_id: not_hate_music.id }
 
-    liked_music.each do |mark|
-
-      finded_music = SongGraph.where(
-        "from_music_id = ? and to_music_id not in (select music_id from users_marks where user_id = ? and mark != 0)", 
-        mark.music_id, current_user.id).order("song_weight desc").limit(1)
-
-      if finded_music.count != 0
-        recemond_music = finded_music[0]
-        break
-      end
-      
+    if not_hate_music == nil 
+      result = { status:"failed" }
     end
-
-    result = { status:"none" }
-
-    if recemond_music != nil
-      result = { status:"ok", music_id: recemond_music.to_music_id }
-    else
-      not_hate_music = Music.where("id not in (select music_id from users_marks where user_id = ? and mark = -1)", current_user.id).order("RAND()").limit(1)[0]
-      result = { status:"ok", music_id: not_hate_music.id }
-    end
-
 
     respond_to do |format|
       format.json { render json: result }
