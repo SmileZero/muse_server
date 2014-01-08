@@ -20,6 +20,13 @@ class MusicsController < ApplicationController
       end
       artist = @music.artist
       album = @music.album
+
+      cover_url = album.cover_url
+      
+      if !([ ".gif", ".jpg", "jpeg", ".png"].include?(cover_url[-4, cover_url.length]))
+        cover_url = "not valid picture"
+      end
+
       musicInfo = {
         id: @music.id,
         name: @music.name,
@@ -31,7 +38,7 @@ class MusicsController < ApplicationController
         artist_name: artist.name,
         album_id: album.album_id,
         album_name: album.name,
-        cover_url: album.cover_url,
+        cover_url: cover_url,
         mark: mark
       }
       @result = {

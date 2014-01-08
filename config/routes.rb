@@ -3,7 +3,7 @@ MuseServer::Application.routes.draw do
   resources :song_graphs
 
   get '/signup' => 'users#new'
-  #get '/login' => 'sessions#new'
+  get '/login' => 'sessions#new'
   post '/signin' => 'sessions#create'
   delete '/signout' => 'sessions#destroy'
   get '/getCSRFToken' => 'sessions#getCSRFToken'

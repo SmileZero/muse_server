@@ -38,20 +38,11 @@ class User < ActiveRecord::Base
 
   def like(music)
     marks = self.liked_marks
-    marks.each do |mark|
-      SongGraph.add_edge(mark.music_id, music.id)
-    end
-
     self.mark music,1
   end
 
   def unmark(music)
-
     marks = self.liked_marks
-    marks.each do |mark|
-      SongGraph.add_edge(mark.music_id, music.id)
-    end
-
     self.mark music,0
   end
 

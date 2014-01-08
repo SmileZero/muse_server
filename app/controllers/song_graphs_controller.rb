@@ -4,11 +4,11 @@ class SongGraphsController < ApplicationController
   # GET /song_graphs
   # GET /song_graphs.json
   def index
+    random_id = rand(Music.count) 
+    rand_music = Music.where("id = ?", random_id)[0]
+    result = { status:"ok", music_id: rand_music.id }
 
-    not_hate_music = Music.where("id not in (select music_id from users_marks where user_id = ? and mark = -1)", current_user.id).order("RAND()").limit(1)[0]
-    result = { status:"ok", music_id: not_hate_music.id }
-
-    if not_hate_music == nil 
+    if rand_music == nil 
       result = { status:"failed" }
     end
 
