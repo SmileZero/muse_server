@@ -9,7 +9,7 @@ $:.unshift(File.expand_path('./lib', ENV['rvm_path']))
 require 'rvm/capistrano'
 set :rvm_ruby_string, '2.0.0p353'
 set :rvm_type, :user
-set :rvm_bin_path, "/home/yan_runchen/.rvm/bin"
+set :rvm_bin_path, "/usr/local/rvm/bin/"
 set :rvm_type, :system
 ssh_options[:forward_agent] = true
 default_run_options[:pty] = true
