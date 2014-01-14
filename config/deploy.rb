@@ -15,7 +15,8 @@ ssh_options[:forward_agent] = true
 default_run_options[:pty] = true
 
 set :application, "muse_server"
-set :repository,  "git@github.com:SmileZero/muse_server.git"#https://github.com/SmileZero/muse_server.git
+#set :repository,  "git@github.com:SmileZero/muse_server.git"#https://github.com/SmileZero/muse_server.git
+set :repository, "https://github.com/SmileZero/muse_server.git"
 set :branch, "release"
 set :deploy_via, :remote_cache
 set :deploy_to, "/var/www/#{application}"
@@ -33,9 +34,13 @@ set :ssh_options, {
   auth_methods: %w(publickey)
 }
 
-role :web, "rackhuber@muse-01.rackbox.net:50108"  #デプロイ先SSHポートを指定（デフォルトは22）
-role :app, "rackhuber@muse-01.rackbox.net:50108"
-role :db,  "rackhuber@muse-01.rackbox.net:50108", :primary => true
+#role :web, "rackhuber@muse-01.rackbox.net:50108"  #デプロイ先SSHポートを指定（デフォルトは22）
+#role :app, "rackhuber@muse-01.rackbox.net:50108"
+#role :db,  "rackhuber@muse-01.rackbox.net:50108", :primary => true
+
+role :web, "172.30.4.19:10022"
+role :app, "172.30.4.19:10022"
+role :db, "172.30.4.19:10022"
 
 set :unicorn_pid, "/tmp/unicorn_#{application}.pid"
 set :unicorn_config, "#{current_path}/config/unicorn.rb" 

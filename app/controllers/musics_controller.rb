@@ -22,9 +22,8 @@ class MusicsController < ApplicationController
       album = @music.album
 
       cover_url = album.cover_url
-      
       if !([ ".gif", ".jpg", "jpeg", ".png"].include?(cover_url[-4, cover_url.length]))
-        cover_url = "not valid picture"
+        cover_url = "not valid picture.1-2-3-4-5-6-7-8-9-0"
       end
 
       musicInfo = {
